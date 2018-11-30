@@ -1,0 +1,93 @@
+﻿@using System.Linq;
+@using TimeClock.Models.LMS_Models;
+@model LMSUserFull
+@{
+    ViewBag.Title = "CreateUsersFromLMSGroup";
+    Layout = "~/Views/Shared/_TimeManagerLayout.cshtml";
+}
+
+<h2 class="text-center">@ViewBag.GroupName</h2>
+
+@using (Html.BeginForm("CreateUsersFromLMS", "Account", FormMethod.Post))
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Create?
+                </th>
+                <th>
+                    Login
+                </th>
+                <th>
+                    First Name
+                </th>
+                <th>
+                    Last Name
+                </th>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Status
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.Users != null)
+            {
+                for (int i = 0; i < ViewBag.Users.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.CheckBox("users[" + i + "].chosen", true)
+                            @Html.Hidden("users[" + i + "].id", ViewBag.Users[i].id as string)
+
+                            @Html.Hidden("users[" + i + "].CourseId", (Int64)ViewBag.Users[i].CourseId)
+                            @Html.Hidden("users[" + i + "].GroupId", (Int64)ViewBag.Users[i].GroupId)
+                        </td>
+                        <td>
+                            @ViewBag.Users[i].login
+                            @Html.Hidden("users[" + i + "].login", ViewBag.Users[i].login as object)
+                        </td>
+                        <td>
+                            @ViewBag.Users[i].first_name
+                            @Html.Hidden("users[" + i + "].first_name", ViewBag.Users[i].first_name as object)
+                        </td>
+                        <td>
+                            @ViewBag.Users[i].last_name
+                            @Html.Hidden("users[" + i + "].last_name", ViewBag.Users[i].last_name as object)
+                        </td>
+                        <td>
+                            @ViewBag.Users[i].user_type
+                            @Html.Hidden("users[" + i + "].user_type", ViewBag.Users[i].user_type as object)
+                        </td>
+                        <td>
+                            @ViewBag.Users[i].status
+                            @Html.Hidden("users[" + i + "].status", ViewBag.Users[i].status as object)
+                        </td>
+                    </tr>
+                    }
+                }
+                else
+                {
+
+                }
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-lg-4">
+
+        </div>
+        <div class="col-lg-2">
+            <input class="btn btn-success" type="submit" value="Create All">
+        </div>
+        <div class="col-lg-2">
+            <input class="btn btn-dark" type="button" value="Back" onclick="return document.location.href='/Account/ViewLMSGroups/'">
+        </div>
+        <div class="col-lg-4">
+
+        </div>
+
+    </div>
+}

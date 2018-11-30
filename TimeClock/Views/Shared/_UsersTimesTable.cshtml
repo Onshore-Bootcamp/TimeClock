@@ -1,0 +1,107 @@
+﻿@using TimeClock.Models
+@model List<IGrouping<int, TimeEntry>>
+
+@if (Model != null && Model.Count() > 0)
+{
+    foreach (IGrouping<int, TimeEntry> weekEntries in Model)
+    {
+        <table class="table table-dark">
+            @if(Model.IndexOf(weekEntries) == 0)
+            {
+                <thead>
+                    <tr>
+                        <th colspan="6">
+                            <h3 class="text-center">
+                                @ViewBag.Username
+                            </h3>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            In
+                        </th>
+                        <th>
+                            Out
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                        <th>
+                            <button class="btn btn-sm btn-success">
+                                <text>Download</text>
+                                <span class="octicon octicon-desktop-download" />
+                            </button>
+                        </th>
+                    </tr>
+                </thead>
+            }
+            @{ TimeSpan total = new TimeSpan();}
+            <tbody>
+                @foreach (TimeEntry entry in weekEntries)
+                {
+                    <tr>
+                        <td>
+                            @entry.TimeIn.DayOfWeek
+                        </td>
+                        <td>
+                            @entry.TimeIn.ToShortDateString()
+                        </td>
+                        <td>
+                            @entry.TimeIn.ToShortTimeString()
+                        </td>
+                        <td>
+                            @if (entry.TimeOut == default(DateTime))
+                            {
+                                <span class="text-danger">Missing</span>
+                            }
+                            else
+                            {
+                                @entry.TimeOut.ToShortTimeString()
+                            }
+                        </td>
+                        <td>
+                            @{ 
+                                string displayValue = "";
+                                if(entry.TimeOut != default(DateTime))
+                                {
+                                    TimeSpan ts = entry.TimeOut - entry.TimeIn;
+                                    total = total.Add(ts);
+                                    displayValue = $"{ts.Hours.ToString("00")}:{ts.Minutes.ToString("00")}";
+                                }
+                             }
+                            @displayValue
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "", "")
+                            @Html.ActionLink("Delete", "", "")
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="4"></td>
+                    <td>
+                        @{ string dv = $"{total.Hours.ToString("00")}:{total.Minutes.ToString("00")}";}
+                        @dv
+                    </td>
+                    <td>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="5" class="text-center">
+            There are no records.
+        </td>
+    </tr>
+}

@@ -1,0 +1,32 @@
+﻿@using TimeClock.Models
+@{
+    ViewBag.Title = "TimeEntries";
+    Layout = "~/Views/Shared/_TimeManagerLayout.cshtml";
+}
+
+@Scripts.Render("~/bundles/ajax")
+<div class="row">
+    <div class="col-md-3">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            @if (ViewBag.Bootcampers != null)
+            {
+                foreach (User bootcamper in ViewBag.Bootcampers)
+                {
+                    <tr>
+                        <td>@ViewBag.Bootcampers.IndexOf(bootcamper)</td>
+                        <td>
+                            @Ajax.ActionLink(bootcamper.Username, "GetTime", "Time",
+                           new { @userId = bootcamper.Id }, new AjaxOptions { UpdateTargetId = "userTimesTable",
+                               InsertionMode = InsertionMode.Replace, HttpMethod = "GET" })
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+    <div class="col-md-9">
+        <table id="userTimesTable"  class="table table-striped table-condensed">
+
+        </table>
+    </div>
+</div>

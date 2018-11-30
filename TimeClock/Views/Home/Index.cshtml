@@ -1,0 +1,227 @@
+﻿@using TimeClock.Models
+@model LoginForm
+@{
+    ViewBag.Title = "Home Page";
+}
+<div class="row" style="min-height:500px; align-items:center;">
+    <div class="col-md-12">
+        <div class="form-horizontal">
+            <!--Default to login of account for form submit.-->
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id="form" }))
+            {
+                <div class="form-group">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4 form-inline justify-content-center" style="min-height:25px;">
+                            <text class="font-weight-bold" id="userTitle"></text>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row  justify-content-center">
+                        <div class="col-md-4 form-inline">
+                            @Html.TextBoxFor(model => Model.Username, new { @class = "form-control", placeholder = "Username...", @id = "username" })
+                            @Html.ValidationMessageFor(model => Model.Username, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4 form-inline justify-content-center">
+                            @Html.PasswordFor(model => Model.Password, new { @class = "form-control", placeholder = "Password...", @id = "password" })
+                            @Html.ValidationMessageFor(model => Model.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-2 offset-md-4 form-inline justify-content-center">
+                            <!--Change ClockIn to button in order to not trigger form but run jQuery instead-->
+                            <input tabindex="1" id="clockInBtn" type="button" class="btn btn-warning" value="Clock In" />
+                        </div>
+
+                        <div class="col-md-2 form-inline justify-content-center">
+                            <input id="loginBtn" type="button" class="btn btn-success" value="Login" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div id="statusModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div id="modalContent" class="modal-content">
+            <div class="modal-header">
+                <h5 id="modalTitle"></h5>
+                <button id="modalCloseBtn" type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalBody"></p>
+                <table id="timeEntryTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Time In</th>
+                            <th>Time Out</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timeEntryBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div align="center" class="col-md-2 col-lg-2 col-sm-2 offset-5">
+                        <button id="modalCancelBtn" type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var data;
+    var screenResetTimeout;
+    $(document).ready(function () {
+        //When the page loads, auto focus to the main input.
+        $("#username").focus();
+
+        var getUserTitle = function () {
+            $.ajax({
+                url: '@Url.Action("GetUserTitle", "Account")',
+                data: {
+                    username: $("#username").val()
+                },
+                context: document.getElementById("userTitle")
+            }).done(function (data) {
+                $('#userTitle').removeClass('text-danger');
+                $('#userTitle').removeClass('text-secondary');
+
+                var titleText = data.trim();
+
+                $(this).text(titleText);
+                if (titleText == "User not found") {
+                    $('#userTitle').addClass('text-danger');
+                }
+                else if (titleText == "Instructor") {
+                    $("#userTitle").addClass('text-instructor');
+                }
+                else {
+                    $('#userTitle').addClass('text-secondary');
+                }
+
+                var button = $("#clockInBtn");
+                button.show();
+                if (data.endsWith(" ")) {
+                    button.removeClass("btn-warning");
+                    button.addClass("btn-danger");
+                    button.val("Clock Out");
+                }
+                else {
+                    button.removeClass("btn-danger");
+                    button.addClass("btn-warning");
+                    button.val("Clock In");
+                }
+            });
+        }
+
+        $("#username").focusout(getUserTitle);
+
+        var resetScreen = function () {
+
+            //Reset user title state.
+            $('#userTitle').html('');
+
+            //reset input state.
+            $("#username").val('');
+            $("#password").val('');
+
+            //Reset ClockIn button state
+            $("#clockInBtn").removeClass("btn-danger");
+            $("#clockInBtn").addClass("btn-warning");
+            $("#clockInBtn").val("Clock In");
+
+            //Reset modal state.
+            $("#modalTitle").text('');
+            $("#modalBody").text('');
+            $('#modalContent').removeClass('modal-danger');
+            $('#timeEntryTable > tr').each(function () {
+                $(this).remove();
+            });
+            $('#timeEntryTable').hide();
+
+            $('#statusModal').modal('hide');
+
+            //Give main input focus.
+            $('#username').focus();
+        };
+
+        $('#modalCancelBtn').on('click', function () {
+            resetScreen();
+            clearTimeout(screenResetTimeout);
+        });
+        $('#modalCloseBtn').on('click', function () {
+            resetScreen();
+            clearTimeout(screenResetTimeout);
+        });
+        //Change to ajax request instead of form switching.
+        //This will allow us to check the response and update the UI
+        $("#clockInBtn").click(function () {
+            $.ajax({
+                url: '@Url.Action("ClockIn", "Home")',
+                data: {
+                    username: $("#username").val(),
+                    password: $("#password").val()
+                },
+                type: "POST",
+                context: document.getElementById("statusModal")
+            }).done(function (data) {
+                $('#modalTitle').text("Notification");
+                $('#modalBody').text(data.message.trim());
+
+                if (data.success !== undefined && data.success === true) {
+                    $('#modalContent').addClass('modal-success');
+
+                    var table = $('#timeEntryBody');
+                    var customHtml = "";
+                    for (var i = 0; i < data.timeEntries.length; i++) {
+                        customHtml += '<tr> <td>';
+                        customHtml += data.timeEntries[i].timeIn;
+                        customHtml += '</td>';
+
+                        if (data.timeEntries[i].timeOut != '12:00:00 AM') {
+                            customHtml += '<td>';
+                            customHtml += data.timeEntries[i].timeOut;
+                            customHtml += '</td>';
+                        }
+                        else {
+                            customHtml += "<td> </td>";
+                        }
+                        customHtml += '</tr>';
+                    }
+                    table.after(customHtml);
+
+                    $('#timeEntryTable').show();
+                    screenResetTimeout = setTimeout(resetScreen, 5000);
+                }
+                else {
+                    $('#modalContent').addClass('modal-danger');
+                }
+                $(this).modal('show');
+            });
+            //$("#form").attr("action", "/Home/ClockIn");
+            //return true;
+        });
+       
+        //Remove this as it will be unnecessary.
+        //$("#loginBtn").click(function () {
+        //    $("#form").attr("action", "/Account/Login");
+        //    return true;
+        //});
+
+        $('#loginBtn').click(function () {
+            $('#form').submit();
+        });
+    });
+</script>

@@ -1,0 +1,38 @@
+﻿@using TimeClock.Models
+@{
+    ViewBag.Title = "LMS Groups";
+    Layout = "~/Views/Shared/_TimeManagerLayout.cshtml";
+}
+
+<h2 class="text-center">LMS Groups</h2>
+
+@using (Html.BeginForm("CreateUsersFromLMSGroup", "Account", FormMethod.Get))
+{
+    <div class="row">
+        <div class="col-md-4 offset-md-4 col-sm-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>@Html.Label("Courses")</strong>
+                    @Html.DropDownList("courseId", (List<SelectListItem>)ViewBag.Courses, "--Select a Course--", new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>@Html.Label("Groups")</strong>
+                    @Html.DropDownList("groupId", (List<SelectListItem>)ViewBag.Groups, "--Select a group--", new { @class="form-control"})
+                </div>
+            </div>
+            <div class="row" style="min-height:15px">
+
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="submit" class="btn btn-success" value="Search" />
+                </div>
+                <div class="col-md-6">
+                    <input type="submit" class="btn btn-dark" value="Cancel" />
+                </div>
+            </div>
+        </div>
+    </div>
+}

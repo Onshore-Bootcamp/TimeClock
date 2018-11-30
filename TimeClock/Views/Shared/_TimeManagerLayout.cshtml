@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Time Clock</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            @Html.ActionLink("TimeClock", "Index", "Time", null, new { @class = "navbar-brand" })
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        @Html.ActionLink("Time Entries", "TimeEntries", "Time", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item active">
+                    </li>
+                </ul>
+                <ul class="float-right navbar-nav">
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <button id="userNavBtn" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @Session["Username"].ToString()
+                            </button>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                @Html.ActionLink("Reports", "Index", "Time", null, new { @class = "dropdown-item" })
+                                <div class="dropdown-divider"></div>
+                                <h1 class="dropdown-header">Users</h1>
+                                @Html.ActionLink("My Class", "Index", "Account", null, new { @class = "dropdown-item" })
+                                @Html.ActionLink("Create User", "CreateUser", "Account", null, new { @class = "dropdown-item" })
+                                @Html.ActionLink("Create LMS Users", "ViewLMSGroups", "Account", null, new { @class = "dropdown-item" })
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="@Url.Action("Logout", "Account")">
+                            <span class="octicon octicon-sign-out"></span>
+                        </a>
+                        @*@Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "nav-link" })*@
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        @RenderBody()
+    </div>
+</body>
+</html>

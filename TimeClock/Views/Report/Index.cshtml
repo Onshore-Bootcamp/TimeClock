@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_TimeManagerLayout.cshtml";
+}
+<script src="~/Scripts/Chart.js"></script>
+<h2 class="text-center">Reports</h2>
+<style>
+    #report{
+        height:100%;
+        width:100%;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-4">
+        <canvas id="report" height="100" width="100">
+
+        </canvas>
+    </div>
+    <div class="col-md-4">
+        <canvas id="report" height="100" width="100"></canvas>
+    </div>
+    <div class="col-md-4">
+        <canvas id="report" height="100" width="100"></canvas>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Report/GetChartData"
+        }).done(function (chData) {
+            var dataT = {
+                labels: chData,
+                datasets: [{
+                    label: "Test Data",
+                    data: chData,
+                    fill: false,
+                    lineTension:.5,
+                    backgroundColor: ["rgba(54, 162, 235, 0.2)", "rgba(255, 99, 132, 0.2)", "rgba(255, 159, 64, 0.2)", "rgba(255, 205, 86, 0.2)", "rgba(75, 192, 192, 0.2)", "rgba(153, 102, 255, 0.2)", "rgba(201, 203, 207, 0.2)"],
+                    borderColor: ["rgb(54, 162, 235)", "rgb(255, 99, 132)", "rgb(255, 159, 64)", "rgb(255, 205, 86)", "rgb(75, 192, 192)", "rgb(153, 102, 255)", "rgb(201, 203, 207)"]
+                }]
+            };
+
+            var ctx = $("#report").get(0).getContext("2d");
+            var myNewChart = new Chart(ctx, {
+                type: 'line',
+                data: dataT,
+                options: {
+                    responsive: true,
+                    title: { display: true, text: 'CHART.JS DEMO CHART' },
+                    legend: { position: 'bottom' },
+                    scales: {
+                        xAxes: [{ gridLines: { display: false }, display: true, scaleLabel: { display: false, labelString: '' } }],
+                        yAxes: [{ gridLines: { display: false }, display: true, scaleLabel: { display: false, labelString: '' }, ticks: { stepSize: 1, beginAtZero: false } }]
+                    },
+                }
+            });
+        });
+    });
+</script>

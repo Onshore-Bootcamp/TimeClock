@@ -1,0 +1,69 @@
+﻿@using TimeClock.Models
+@model User
+@{
+    ViewBag.Title = "CreateUser";
+    Layout = "~/Views/Shared/_TimeManagerLayout.cshtml";
+}
+
+<h2 class="text-center">CreateUser</h2>
+
+@using (Html.BeginForm("CreateUser", "Account", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-4 offset-md-4 col-sm-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>@Html.LabelFor(model => Model.FirstName)</strong>
+                    @Html.TextBoxFor(model => Model.FirstName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>@Html.LabelFor(model => Model.LastName)</strong>
+                    @Html.TextBoxFor(model => Model.LastName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>@Html.LabelFor(model => Model.Username)</strong>
+                    @Html.TextBoxFor(model => Model.Username, new { @class="form-control"})
+                    @Html.ValidationMessageFor(model => Model.Username, "", new { @class="text-danger"})
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>@Html.LabelFor(model => Model.Password)</strong>
+                    @Html.PasswordFor(model => Model.Password, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>@Html.LabelFor(model => Model.Role)</strong>
+                    @Html.TextBoxFor(model => Model.Role, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Username, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>@Html.LabelFor(model => Model.Active)</strong>
+                    @Html.CheckBoxFor(model => Model.Active, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Active, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row" style="min-height:15px">
+
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="submit" class="btn btn-success" value="Create" />
+                </div>
+                <div class="col-md-6">
+                    <input type="submit" class="btn btn-dark" value="Cancel" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
